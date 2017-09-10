@@ -193,6 +193,7 @@ function displayDetailedFacts(userId, movie, field, req) {
      request(req, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var facts = JSON.parse(body);
+            console.log(facts);
             facts.forEach(function(fact) {
                 allFacts += fact.name + '\n';
             })
