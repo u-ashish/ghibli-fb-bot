@@ -194,9 +194,14 @@ function displayDetailedFacts(userId, movie, field, req) {
         if (!error && response.statusCode == 200) {
             var facts = JSON.parse(body);
             console.log(facts);
-            facts.forEach(function(fact) {
-                allFacts += fact.name + '\n';
-            })
+            if(facts.length > 1) {
+                facts.forEach(function(fact) {
+                    allFacts += fact.name + '\n';
+                })                
+            } else {
+                allFacts += facts.name + '\n';
+            }
+
             sendMessage(userId, {text: allFacts});                 
         }
      })
