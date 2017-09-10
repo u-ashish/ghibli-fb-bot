@@ -125,47 +125,45 @@ function findAllGhibliMovies(userId) {
         if (!error && response.statusCode == 200) {
             var movie = JSON.parse(body)[0];
             console.log(movie);
-            if(movie.Response === "True") {
-                var query = {user_id: userId};
-                var update = {
-                    user_id: userId,
-                    title: movie.title,
-                    description: movie.description,
-                    director: movie.director,
-                    producer: movie.producer,
-                    release_date: movie.release_date,
-                    rt_score: movie.rt_score
-                };
-                var options = {upsert: true};
-                Movie.findOneAndUpdate(query, update, options, function(err, mov) {
-                    if (err) {
-                        console.log("Database error: " + err);
-                    } else {
-                        message = {
-                            attachment: {
-                                type: "template",
-                                payload: {
-                                    template_type: "generic",
-                                    elements: [{
-                                        title: movie.Title,
-                                        buttons: [{
-                                            type: "postback",
-                                            title: "Yes",
-                                            payload: "Correct"
-                                        }, {
-                                            type: "postback",
-                                            title: "No",
-                                            payload: "Incorrect"
-                                        }]
+            var query = {user_id: userId};
+            var update = {
+                user_id: userId,
+                title: movie.title,
+                description: movie.description,
+                director: movie.director,
+                producer: movie.producer,
+                release_date: movie.release_date,
+                rt_score: movie.rt_score
+            };
+            var options = {upsert: true};
+            Movie.findOneAndUpdate(query, update, options, function(err, mov) {
+                if (err) {
+                    console.log("Database error: " + err);
+                } else {
+                    message = {
+                        attachment: {
+                            type: "template",
+                            payload: {
+                                template_type: "generic",
+                                elements: [{
+                                    title: movie.Title,
+                                    buttons: [{
+                                        type: "postback",
+                                        title: "Yes",
+                                        payload: "Correct"
+                                    }, {
+                                        type: "postback",
+                                        title: "No",
+                                        payload: "Incorrect"
                                     }]
-                                }
+                                }]
                             }
-                        };
-                        console.log(message);
-                        sendMessage(userId, message);
-                    }
-                });                    
-            }
+                        }
+                    };
+                    console.log(message);
+                    sendMessage(userId, message);
+                }
+            });                    
         }
      })
 }
