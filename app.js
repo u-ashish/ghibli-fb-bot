@@ -105,7 +105,7 @@ function processMessage(event) {
             } else if (formattedMsg.includes('show all')) {
                 findAllGhibliMovies(senderId, formattedMsg);
             } else if(formattedMsg.includes('get description')) {
-                getMovieDetail(senderId, description);
+                getMovieDetail(senderId, "description");
             } else {
                 sendMessage(senderId, {text: "Try again with a known command."});
             }
