@@ -154,23 +154,23 @@ function findSpecificMovie(userId, movieTitle) {
             var movies = JSON.parse(body);
             movies.forEach(function(movie) {
                 if(movie.title.toLowerCase() === movieTitle.toLowerCase()) {
-                    var query = {user_id: userId};
-                    var update = {
-                        user_id: userId,
-                        title: movie.title,
-                        description: movie.description,
-                        director: movie.director,
-                        producer: movie.director,
-                        release_date: movie.release_date,
-                        rt_score: movie.rt_score
-                    };
                     foundMovie = movie;
-                    var options = {upsert: true};
                 }
             })
             if(foundMovie) {
                 console.log("I found one");
                 console.log(foundMovie);
+                var query = {user_id: userId};
+                var update = {
+                    user_id: userId,
+                    title: foundMovie.title,
+                    description: foundMovie.description,
+                    director: foundMovie.director,
+                    producer: foundMovie.director,
+                    release_date: foundMovie.release_date,
+                    rt_score: foundMovie.rt_score
+                };
+                var options = {upsert: true};
                 Movie.findOneAndUpdate(query, update, options, function(err, mov) {
                     if (err) {
                         console.log('Database error: ' + err);
