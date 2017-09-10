@@ -163,7 +163,7 @@ function findAllGhibliMovies(userId) {
                         }
                     });                    
                 }
-            }
+            })
         }
      }
 }
