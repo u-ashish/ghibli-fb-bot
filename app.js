@@ -142,7 +142,7 @@ function findAllGhibliMovies(userId) {
                         console.log('Database error: ' + err);
                     } else {
                         message = {
-                            text = movie.title,
+                            text: movie.title,
                         }
                     }
                     sendMessage(userId, message);
