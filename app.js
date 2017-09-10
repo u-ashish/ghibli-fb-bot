@@ -74,7 +74,7 @@ function processPostback(event) {
                 name = bodyObj.first_name;
                 greeting = "Hi " + name + ". ";
             }
-            var message = greeting + "I'm the Ghibli Bot. What studio Ghibli movie would you like to learn more about?";
+            var message = greeting + "I'm the Ghibli Bot. What studio Ghibli movie would you like to learn more about? If you don't know them, type 'show all' to get a list of them. Type 'help' if you need assistance.";
             sendMessage(senderId, {text: message});
         });
     } else if (payload === "Correct") {
@@ -106,6 +106,26 @@ function processMessage(event) {
                 findAllGhibliMovies(senderId, formattedMsg);
             } else if(formattedMsg.includes('get description')) {
                 getMovieDetail(senderId, "description");
+            } else if(formattedMsg.includes('get director')) {
+                getMovieDetail(senderId, "director");
+            } else if(formattedMsg.includes('get producer')) {
+                getMovieDetail(senderId, "producer");
+            } else if(formattedMsg.includes('get release date')) {
+                getMovieDetail(senderId, "release_date");
+            } else if(formattedMsg.includes('get description')) {
+                getMovieDetail(senderId, "description");
+            } else if(formattedMsg.includes('get rating')) {
+                getMovieDetail(senderId, "rt_score");
+            } else if(formattedMsg.includes('get people')) {
+                getMovieDetail(senderId, "people");
+            } else if(formattedMsg.includes('get species')) {
+                getMovieDetail(senderId, "species");
+            } else if(formattedMsg.includes('get locations')) {
+                getMovieDetail(senderId, "locations");
+            } else if(formattedMsg.includes('help')) {
+                getMovieDetail(senderId, {text: "Type 'help' to get help commands." + '\n' + 
+                    "Type 'show all' to get list of all Ghibli movies" + '\n' + 
+                    "Type 'find <name>' to get the name of a specific movie"});
             } else {
                 sendMessage(senderId, {text: "Try again with a known command."});
             }
@@ -116,32 +136,14 @@ function processMessage(event) {
 }
 
 function findAllGhibliMovies(userId) {
+    var allMovies = 'List of all Studio Ghibli Movies';
      request(`${BASE_URL}/films`, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var movies = JSON.parse(body);
             movies.forEach(function(movie) {
-                var query = {user_id: userId};
-                var update = {
-                    user_id: userId,
-                    title: movie.title,
-                    description: movie.description,
-                    director: movie.director,
-                    producer: movie.director,
-                    release_date: movie.release_date,
-                    rt_score: movie.rt_score
-                };
-                var options = {upsert: true};
-                Movie.findOneAndUpdate(query, update, options, function(err, mov) {
-                    if (err) {
-                        console.log('Database error: ' + err);
-                    } else {
-                        message = {
-                            text: movie.title,
-                        }
-                    }
-                    sendMessage(userId, message);
-                })
-            })                 
+                allMovies += movie.title + '\n';
+            })
+            sendMessage(userId, {text: allMovies});                 
         }
      })
 }
