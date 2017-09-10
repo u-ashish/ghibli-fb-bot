@@ -104,6 +104,8 @@ function processMessage(event) {
                 findSpecificMovie(senderId, formattedMsg.substring(5));              
             } else if (formattedMsg.includes('show all')) {
                 findAllGhibliMovies(senderId, formattedMsg);
+            } else if(formattedMsg.includes('get description')) {
+                getMovieDetail(senderId, description);
             } else {
                 sendMessage(senderId, {text: "Try again with a known command."});
             }
@@ -114,8 +116,6 @@ function processMessage(event) {
 }
 
 function findAllGhibliMovies(userId) {
-    console.log("FINDING MOVIES");
-    console.log(userId);
      request(`${BASE_URL}/films`, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var movies = JSON.parse(body);
@@ -147,7 +147,6 @@ function findAllGhibliMovies(userId) {
 }
 
 function findSpecificMovie(userId, movieTitle) {
-    console.log('searching for: ' + movieTitle);
     var foundMovie;
     request(`${BASE_URL}/films`, function (error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -158,8 +157,6 @@ function findSpecificMovie(userId, movieTitle) {
                 }
             })
             if(foundMovie) {
-                console.log("I found one");
-                console.log(foundMovie);
                 var query = {user_id: userId};
                 var update = {
                     user_id: userId,
@@ -176,7 +173,8 @@ function findSpecificMovie(userId, movieTitle) {
                         console.log('Database error: ' + err);
                     } else {
                         message = {
-                            text: 'Title: ' + foundMovie.title + 'Rating: ' + foundMovie.rt_score,
+                            //Update this to create a full detailed text window
+                            text: 'Title: ' + foundMovie.title + '\n' +'Rating: ' + foundMovie.rt_score,
                         }
                     }
                     sendMessage(userId, message);
@@ -187,6 +185,16 @@ function findSpecificMovie(userId, movieTitle) {
               
         }
      })   
+}
+
+function getDescription(userId, field) {
+    Movie.findOne({user_id: userId}, function(err, movie) {
+        if(err) {
+            sendMessage(userId, {text: "Something went wrong. Try again"});
+        } else {
+            sendMessage(userId, {text: movie[field]});
+        }
+    })
 }
 
 function getMovieDetail(userId, field) {
