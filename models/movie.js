@@ -12,6 +12,7 @@ var MovieSchema = new Schema({
   people: {type: String},
   species: {type: String},
   locations: {type: String},
+  vehicles: {type: String},
   url: {type: String}
 });
 

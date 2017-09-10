@@ -108,11 +108,13 @@ function processMessage(event) {
             } else if(formattedMsg.includes('get rating')) {
                 getMovieDetail(senderId, "rt_score");
             } else if(formattedMsg.includes('get people')) {
-                getMovieDetail(senderId, "people");
+                getMovieDetail(senderId, "people", true);
             } else if(formattedMsg.includes('get species')) {
-                getMovieDetail(senderId, "species");
+                getMovieDetail(senderId, "species", true);
+            } else if(formattedMsg.includes('get vehicles')) {
+                getMovieDetail(senderId, "vehicles", true);
             } else if(formattedMsg.includes('get locations')) {
-                getMovieDetail(senderId, "locations");
+                getMovieDetail(senderId, "locations", true);
             } else if(formattedMsg.includes('help')) {
                 sendMessage(senderId, {text: "Type 'help' to get help commands." + '\n' + 
                     "Type 'show all' to get list of all Ghibli movies" + '\n' + 
@@ -159,7 +161,12 @@ function findSpecificMovie(userId, movieTitle) {
                     director: foundMovie.director,
                     producer: foundMovie.director,
                     release_date: foundMovie.release_date,
-                    rt_score: foundMovie.rt_score
+                    rt_score: foundMovie.rt_score,
+                    people: foundMovie.people, 
+                    species: foundMovie.species,
+                    locations: foundMovie.locations,
+                    vehicles: foundMovie.vehicles,
+                    url: foundMovie.url,
                 };
                 var options = {upsert: true};
                 Movie.findOneAndUpdate(query, update, options, function(err, mov) {
@@ -181,12 +188,30 @@ function findSpecificMovie(userId, movieTitle) {
      })   
 }
 
-function getMovieDetail(userId, field) {
+function displayDetailedFacts(userId, movie, field, req) {
+    var allFacts = '-- List of facts related to ' + field + '.  --' + '\n';
+     request(req, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var facts = JSON.parse(body);
+            facts.forEach(function(fact) {
+                allFacts += fact.name + '\n';
+            })
+            sendMessage(userId, {text: allFacts});                 
+        }
+     })
+}
+
+function getMovieDetail(userId, field, detailedFlag) {
     Movie.findOne({user_id: userId}, function(err, movie) {
         if(err) {
             sendMessage(userId, {text: "Something went wrong. Try again"});
         } else {
-            sendMessage(userId, {text: movie[field]});
+            if(detailedFlag) {
+                displayDetailedFacts(userId, movie, field, movie[field]);
+            } else {
+                sendMessage(userId, {text: movie[field]});
+            }
+            
         }
     });
 }
