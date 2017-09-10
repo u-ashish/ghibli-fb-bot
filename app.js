@@ -2,11 +2,11 @@ var express = require("express");
 var request = require("request");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-var API_KEY = 'cec55b7b';
 var db = mongoose.connect(process.env.MONGODB_URI);
 var Movie = require("./models/movie");
 
 var app = express();
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.listen((process.env.PORT || 5000));
@@ -89,9 +89,6 @@ function processMessage(event) {
         var message = event.message;
         var senderId = event.sender.id;
 
-        console.log("Received message from senderId: " + senderId);
-        console.log("Message is: " + JSON.stringify(message));
-
         // You may get a text or attachment but not both
         if (message.text) {
             var formattedMsg = message.text.toLowerCase().trim();
@@ -108,8 +105,6 @@ function processMessage(event) {
                 getMovieDetail(senderId, "producer");
             } else if(formattedMsg.includes('get release date')) {
                 getMovieDetail(senderId, "release_date");
-            } else if(formattedMsg.includes('get description')) {
-                getMovieDetail(senderId, "description");
             } else if(formattedMsg.includes('get rating')) {
                 getMovieDetail(senderId, "rt_score");
             } else if(formattedMsg.includes('get people')) {
@@ -119,7 +114,10 @@ function processMessage(event) {
             } else if(formattedMsg.includes('get locations')) {
                 getMovieDetail(senderId, "locations");
             } else if(formattedMsg.includes('help')) {
-                sendMessage(senderId, {text: "Type 'help' to get help commands." + '\n' + "Type 'show all' to get list of all Ghibli movies" + '\n' + "Type 'find <name>' to get the name of a specific movie"});
+                sendMessage(senderId, {text: "Type 'help' to get help commands." + '\n' + 
+                    "Type 'show all' to get list of all Ghibli movies" + '\n' + 
+                    "Type 'find <name>' to get the name of a specific movie" + '\n' + 
+                    "Type 'get <description/director/producer/release date/rating/people/species/locations' for detailed info";});
             } else {
                 sendMessage(senderId, {text: "Try again with a known command."});
             }
@@ -170,7 +168,7 @@ function findSpecificMovie(userId, movieTitle) {
                     } else {
                         message = {
                             //Update this to create a full detailed text window
-                            text: 'Title: ' + foundMovie.title + '\n' +'Rating: ' + foundMovie.rt_score,
+                            text: 'Title: ' + foundMovie.title + '\n' +'Released On: ' + foundMovie.release_date,
                         }
                     }
                     sendMessage(userId, message);
