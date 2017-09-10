@@ -119,7 +119,7 @@ function processMessage(event) {
 }
 
 function findAllGhibliMovies(userId) {
-     request(`${BASE_URL}\films`, function (error, response, body) {
+     request(`${BASE_URL}/films`, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var mobieObj = JSON.parse(body);
             movieObj.forEach(function(movie) {
