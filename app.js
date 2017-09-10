@@ -193,7 +193,6 @@ function displayDetailedFacts(userId, movie, field, req) {
      request(req, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var facts = JSON.parse(body);
-            console.log(facts);
             if(facts.length > 1) {
                 facts.forEach(function(fact) {
                     allFacts += fact.name + '\n';
@@ -224,7 +223,6 @@ function getMovieDetail(userId, field, detailedFlag) {
 
 // sends message to user
 function sendMessage(recipientId, message) {
-    console.log("SENDING MESSAGE");
     request({
         url: "https://graph.facebook.com/v2.6/me/messages",
         qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
