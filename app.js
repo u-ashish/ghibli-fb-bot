@@ -147,6 +147,8 @@ function findAllGhibliMovies(userId) {
                                 template_type: "generic",
                                 elements: [{
                                     title: movie.Title,
+                                    image_url: "https://petersfancybrownhats.com/company_image.png",
+                                    subtitle: 'movie',
                                     buttons: [{
                                         type: "postback",
                                         title: "Yes",
