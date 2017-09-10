@@ -111,7 +111,7 @@ function processMessage(event) {
                 case "show all":
                     findAllGhibliMovies(senderId, formattedMsg);
                 default:
-                    break;
+                    sendMessage(senderId, {text: "Try again with a known command."});
             }
         } else if (message.attachments) {
             sendMessage(senderId, {text: "Sorry, I don't understand your request."});
@@ -147,33 +147,52 @@ function findAllGhibliMovies(userId) {
                     }
                     sendMessage(userId, message);
                 })
-            })
-            // var movie = JSON.parse(body)[0];
-            // console.log(movie);
-            // var query = {user_id: userId};
-            // var update = {
-            //     user_id: userId,
-            //     title: movie.title,
-            //     description: movie.description,
-            //     director: movie.director,
-            //     producer: movie.producer,
-            //     release_date: movie.release_date,
-            //     rt_score: movie.rt_score
-            // };
-            // var options = {upsert: true};
-            // Movie.findOneAndUpdate(query, update, options, function(err, mov) {
-            //     if (err) {
-            //         console.log("Database error: " + err);
-            //     } else {
-            //         message = {
-            //             text: movie.title,
-            //         };
-            //         console.log(message);
-            //         sendMessage(userId, message);
-            //     }
-            // });                    
+            })                 
         }
      })
+}
+
+function findSpecificMovie(userId, movieTitle) {
+    console.log('searching for: ' + movieTitle);
+    var foundMovie;
+    request(`${BASE_URL}/films`, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var movies = JSON.parse(body);
+            movies.forEach(function(movie) {
+                if(movie.title.toLowerCase() === movieTitle.toLowerCase()) {
+                    var query = {user_id: userId};
+                    var update = {
+                        user_id: userId,
+                        title: movie.title,
+                        description: movie.description,
+                        director: movie.director,
+                        producer: movie.director,
+                        release_date: movie.release_date,
+                        rt_score: movie.rt_score
+                    };
+                    foundMovie = movie;
+                    var options = {upsert: true};
+                }
+            })
+            if(foundMovie) {
+                console.log("I found one");
+                console.log(foundMovie);
+                Movie.findOneAndUpdate(query, update, options, function(err, mov) {
+                    if (err) {
+                        console.log('Database error: ' + err);
+                    } else {
+                        message = {
+                            text: 'Title: ' + foundMovie.title + 'Rating: ' + foundMovie.rt_score,
+                        }
+                    }
+                    sendMessage(userId, message);
+                })                  
+            } else {
+                sendMessage(userId, {text: "No movie found"});
+            }    
+              
+        }
+     })   
 }
 
 function getMovieDetail(userId, field) {
