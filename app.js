@@ -99,23 +99,13 @@ function processMessage(event) {
             // If we receive a text message, check to see if it matches any special
             // keywords and send back the corresponding movie detail.
             // Otherwise search for new movie.
-            switch (formattedMsg) {
-                case "plot":
-                case "date":
-                case "runtime":
-                case "director":
-                case "cast":
-                case "find": 
-                    findSpecificMovie(senderId, formattedMsg.substring(5));
-                    break;
-                case "rating":
-                    getMovieDetail(senderId, formattedMsg);
-                    break;
-                case "show all":
-                    findAllGhibliMovies(senderId, formattedMsg);
-                    break;
-                default:
-                    sendMessage(senderId, {text: "Try again with a known command."});
+
+            if(formattedMsg.includes('find')) {
+                findSpecificMovie(senderId, formattedMsg.substring(5));              
+            } else if (formattedMsg.includes('show all')) {
+                findAllGhibliMovies(senderId, formattedMsg);
+            } else {
+                sendMessage(senderId, {text: "Try again with a known command."});
             }
         } else if (message.attachments) {
             sendMessage(senderId, {text: "Sorry, I don't understand your request."});
