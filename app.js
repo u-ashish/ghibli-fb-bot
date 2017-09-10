@@ -165,7 +165,7 @@ function findAllGhibliMovies(userId) {
                 }
             })
         }
-     }
+     })
 }
 
 function findMovie(userId, movieTitle) {
