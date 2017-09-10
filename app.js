@@ -2,7 +2,7 @@ var express = require("express");
 var request = require("request");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-
+var API_KEY = 'cec55b7b';
 var db = mongoose.connect(process.env.MONGODB_URI);
 var Movie = require("./models/movie");
 
@@ -117,7 +117,7 @@ function processMessage(event) {
 }
 
 function findMovie(userId, movieTitle) {
-    request("http://www.omdbapi.com/?type=movie&t=" + movieTitle, function (error, response, body) {
+    request("http://www.omdbapi.com/?type=movie&t=" + movieTitle + "&apikey=" + API_KEY, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var movieObj = JSON.parse(body);
             if (movieObj.Response === "True") {
