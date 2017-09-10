@@ -11,6 +11,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.listen((process.env.PORT || 5000));
 
+var BASE_URL = 'https://ghibliapi.herokuapp.com';
+
 // Server index page
 app.get("/", function (req, res) {
     res.send("Deployed!");
@@ -72,7 +74,7 @@ function processPostback(event) {
                 name = bodyObj.first_name;
                 greeting = "Hi " + name + ". ";
             }
-            var message = greeting + "My name is SP Movie Bot. I can tell you various details regarding movies. What movie would you like to know about?";
+            var message = greeting + "I'm the Ghibli Bot. What studio Ghibli movie would you like to learn more about?";
             sendMessage(senderId, {text: message});
         });
     } else if (payload === "Correct") {
@@ -108,12 +110,62 @@ function processMessage(event) {
                     break;
 
                 default:
-                    findMovie(senderId, formattedMsg);
+                    findAllGhibliMovies(senderId, formattedMsg);
             }
         } else if (message.attachments) {
             sendMessage(senderId, {text: "Sorry, I don't understand your request."});
         }
     }
+}
+
+function findAllGhibliMovies(userId) {
+     request(`${BASE_URL}\films`, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var mobieObj = JSON.parse(body);
+            movieObj.forEach(function(movie) {
+                if(movie.Response === "True") {
+                    var query = {user_id: userId};
+                    var update = {
+                        user_id: userId,
+                        title: movie.title,
+                        description: movie.description,
+                        director: movie.director,
+                        producer: movie.producer,
+                        release_date: movie.release_date,
+                        rt_score: movie.rt_score
+                    };
+                    var options = {upsert: true};
+                    Movie.findOneAndUpdate(query, update, options, function(err, mov) {
+                        if (err) {
+                            console.log("Database error: " + err);
+                        } else {
+                            message = {
+                                attachment: {
+                                    type: "template",
+                                    payload: {
+                                        template_type: "generic",
+                                        elements: [{
+                                            title: movie.Title,
+                                            buttons: [{
+                                                type: "postback",
+                                                title: "Yes",
+                                                payload: "Correct"
+                                            }, {
+                                                type: "postback",
+                                                title: "No",
+                                                payload: "Incorrect"
+                                            }]
+                                        }]
+                                    }
+                                }
+                            };
+                            sendMessage(userId, message);
+                        }
+                    });                    
+                }
+            }
+        }
+     }
 }
 
 function findMovie(userId, movieTitle) {
