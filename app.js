@@ -128,7 +128,7 @@ function findAllGhibliMovies(userId) {
             movies.forEach(function(movie) {
                 var query = {user_id: userId};
                 var update = {
-                    user_id = userId,
+                    user_id: userId,
                     title: movie.title,
                     description: movie.description,
                     director: movie.director,
