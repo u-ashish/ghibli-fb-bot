@@ -141,26 +141,27 @@ function findAllGhibliMovies(userId) {
                     console.log("Database error: " + err);
                 } else {
                     message = {
-                        attachment: {
-                            type: "template",
-                            payload: {
-                                template_type: "generic",
-                                elements: [{
-                                    title: movie.Title,
-                                    image_url: "https://petersfancybrownhats.com/company_image.png",
-                                    subtitle: 'movie',
-                                    buttons: [{
-                                        type: "postback",
-                                        title: "Yes",
-                                        payload: "Correct"
-                                    }, {
-                                        type: "postback",
-                                        title: "No",
-                                        payload: "Incorrect"
-                                    }]
-                                }]
-                            }
-                        }
+                        text: movie.title,
+                        // attachment: {
+                        //     type: "template",
+                        //     payload: {
+                        //         template_type: "generic",
+                        //         elements: [{
+                        //             title: movie.Title,
+                        //             image_url: "https://petersfancybrownhats.com/company_image.png",
+                        //             subtitle: 'movie',
+                        //             buttons: [{
+                        //                 type: "postback",
+                        //                 title: "Yes",
+                        //                 payload: "Correct"
+                        //             }, {
+                        //                 type: "postback",
+                        //                 title: "No",
+                        //                 payload: "Incorrect"
+                        //             }]
+                        //         }]
+                        //     }
+                        // }
                     };
                     console.log(message);
                     sendMessage(userId, message);
