@@ -105,11 +105,15 @@ function processMessage(event) {
                 case "runtime":
                 case "director":
                 case "cast":
+                case "find": 
+                    findSpecificMovie(senderId, formattedMsg.substring(5));
+                    break;
                 case "rating":
                     getMovieDetail(senderId, formattedMsg);
                     break;
                 case "show all":
                     findAllGhibliMovies(senderId, formattedMsg);
+                    break;
                 default:
                     sendMessage(senderId, {text: "Try again with a known command."});
             }
