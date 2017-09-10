@@ -108,9 +108,10 @@ function processMessage(event) {
                 case "rating":
                     getMovieDetail(senderId, formattedMsg);
                     break;
-
-                default:
+                case "show all":
                     findAllGhibliMovies(senderId, formattedMsg);
+                default:
+                    break;
             }
         } else if (message.attachments) {
             sendMessage(senderId, {text: "Sorry, I don't understand your request."});
@@ -123,109 +124,56 @@ function findAllGhibliMovies(userId) {
     console.log(userId);
      request(`${BASE_URL}/films`, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-            var movie = JSON.parse(body)[0];
-            console.log(movie);
-            var query = {user_id: userId};
-            var update = {
-                user_id: userId,
-                title: movie.title,
-                description: movie.description,
-                director: movie.director,
-                producer: movie.producer,
-                release_date: movie.release_date,
-                rt_score: movie.rt_score
-            };
-            var options = {upsert: true};
-            Movie.findOneAndUpdate(query, update, options, function(err, mov) {
-                if (err) {
-                    console.log("Database error: " + err);
-                } else {
-                    message = {
-                        text: movie.title,
-                        // attachment: {
-                        //     type: "template",
-                        //     payload: {
-                        //         template_type: "generic",
-                        //         elements: [{
-                        //             title: movie.Title,
-                        //             image_url: "https://petersfancybrownhats.com/company_image.png",
-                        //             subtitle: 'movie',
-                        //             buttons: [{
-                        //                 type: "postback",
-                        //                 title: "Yes",
-                        //                 payload: "Correct"
-                        //             }, {
-                        //                 type: "postback",
-                        //                 title: "No",
-                        //                 payload: "Incorrect"
-                        //             }]
-                        //         }]
-                        //     }
-                        // }
-                    };
-                    console.log(message);
-                    sendMessage(userId, message);
-                }
-            });                    
-        }
-     })
-}
-
-function findMovie(userId, movieTitle) {
-    request("http://www.omdbapi.com/?type=movie&t=" + movieTitle + "&apikey=" + API_KEY, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var movieObj = JSON.parse(body);
-            if (movieObj.Response === "True") {
+            var movies = JSON.parse(body);
+            movies.forEach(function(movie) {
                 var query = {user_id: userId};
                 var update = {
-                    user_id: userId,
-                    title: movieObj.Title,
-                    plot: movieObj.Plot,
-                    date: movieObj.Released,
-                    runtime: movieObj.Runtime,
-                    director: movieObj.Director,
-                    cast: movieObj.Actors,
-                    rating: movieObj.imdbRating,
-                    poster_url:movieObj.Poster
+                    user_id = userId,
+                    title: movie.title,
+                    description: movie.description,
+                    director: movie.director,
+                    producer: movie.director,
+                    release_date: movie.release_date,
+                    rt_score: movie.rt_score
                 };
                 var options = {upsert: true};
                 Movie.findOneAndUpdate(query, update, options, function(err, mov) {
                     if (err) {
-                        console.log("Database error: " + err);
+                        console.log('Database error: ' + err);
                     } else {
                         message = {
-                            attachment: {
-                                type: "template",
-                                payload: {
-                                    template_type: "generic",
-                                    elements: [{
-                                        title: movieObj.Title,
-                                        subtitle: "Is this the movie you are looking for?",
-                                        image_url: movieObj.Poster === "N/A" ? "http://placehold.it/350x150" : movieObj.Poster,
-                                        buttons: [{
-                                            type: "postback",
-                                            title: "Yes",
-                                            payload: "Correct"
-                                        }, {
-                                            type: "postback",
-                                            title: "No",
-                                            payload: "Incorrect"
-                                        }]
-                                    }]
-                                }
-                            }
-                        };
-                        sendMessage(userId, message);
+                            text = movie.title,
+                        }
                     }
-                });
-            } else {
-                console.log(movieObj.Error);
-                sendMessage(userId, {text: movieObj.Error});
-            }
-        } else {
-            sendMessage(userId, {text: "Something went wrong. Try again."});
+                    sendMessage(userId, message);
+                })
+            })
+            // var movie = JSON.parse(body)[0];
+            // console.log(movie);
+            // var query = {user_id: userId};
+            // var update = {
+            //     user_id: userId,
+            //     title: movie.title,
+            //     description: movie.description,
+            //     director: movie.director,
+            //     producer: movie.producer,
+            //     release_date: movie.release_date,
+            //     rt_score: movie.rt_score
+            // };
+            // var options = {upsert: true};
+            // Movie.findOneAndUpdate(query, update, options, function(err, mov) {
+            //     if (err) {
+            //         console.log("Database error: " + err);
+            //     } else {
+            //         message = {
+            //             text: movie.title,
+            //         };
+            //         console.log(message);
+            //         sendMessage(userId, message);
+            //     }
+            // });                    
         }
-    });
+     })
 }
 
 function getMovieDetail(userId, field) {
