@@ -117,7 +117,7 @@ function processMessage(event) {
                 sendMessage(senderId, {text: "Type 'help' to get help commands." + '\n' + 
                     "Type 'show all' to get list of all Ghibli movies" + '\n' + 
                     "Type 'find <name>' to get the name of a specific movie" + '\n' + 
-                    "Type 'get <description/director/producer/release date/rating/people/species/locations' for detailed info"});
+                    "Type 'get <description/director/producer/release date/rating/people/species/locations'> for detailed info about any of those things"});
             } else {
                 sendMessage(senderId, {text: "Try again with a known command."});
             }
@@ -128,7 +128,7 @@ function processMessage(event) {
 }
 
 function findAllGhibliMovies(userId) {
-    var allMovies = 'List of all Studio Ghibli Movies' + '\n';
+    var allMovies = '-- List of all Studio Ghibli Movies --' + '\n';
      request(`${BASE_URL}/films`, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var movies = JSON.parse(body);
