@@ -96,10 +96,6 @@ function processMessage(event) {
         if (message.text) {
             var formattedMsg = message.text.toLowerCase().trim();
 
-            // If we receive a text message, check to see if it matches any special
-            // keywords and send back the corresponding movie detail.
-            // Otherwise search for new movie.
-
             if(formattedMsg.includes('find')) {
                 findSpecificMovie(senderId, formattedMsg.substring(5));              
             } else if (formattedMsg.includes('show all')) {
@@ -123,9 +119,7 @@ function processMessage(event) {
             } else if(formattedMsg.includes('get locations')) {
                 getMovieDetail(senderId, "locations");
             } else if(formattedMsg.includes('help')) {
-                getMovieDetail(senderId, {text: "Type 'help' to get help commands." + '\n' + 
-                    "Type 'show all' to get list of all Ghibli movies" + '\n' + 
-                    "Type 'find <name>' to get the name of a specific movie"});
+                sendMessage(senderId, {text: "Type 'help' to get help commands." + '\n' + "Type 'show all' to get list of all Ghibli movies" + '\n' + "Type 'find <name>' to get the name of a specific movie"});
             } else {
                 sendMessage(senderId, {text: "Try again with a known command."});
             }
@@ -136,7 +130,7 @@ function processMessage(event) {
 }
 
 function findAllGhibliMovies(userId) {
-    var allMovies = 'List of all Studio Ghibli Movies';
+    var allMovies = 'List of all Studio Ghibli Movies' + '\n';
      request(`${BASE_URL}/films`, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var movies = JSON.parse(body);
@@ -187,16 +181,6 @@ function findSpecificMovie(userId, movieTitle) {
               
         }
      })   
-}
-
-function getDescription(userId, field) {
-    Movie.findOne({user_id: userId}, function(err, movie) {
-        if(err) {
-            sendMessage(userId, {text: "Something went wrong. Try again"});
-        } else {
-            sendMessage(userId, {text: movie[field]});
-        }
-    })
 }
 
 function getMovieDetail(userId, field) {
