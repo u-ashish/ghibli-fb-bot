@@ -56,8 +56,6 @@ function processPostback(event) {
     var payload = event.postback.payload;
 
     if (payload === "Greeting") {
-        // Get user's first name from the User Profile API
-        // and include it in the greeting
         request({
             url: "https://graph.facebook.com/v2.6/" + senderId,
             qs: {
@@ -77,11 +75,13 @@ function processPostback(event) {
             var message = greeting + "I'm the Ghibli Bot. What studio Ghibli movie would you like to learn more about? If you don't know them, type 'show all' to get a list of them. Type 'help' if you need assistance.";
             sendMessage(senderId, {text: message});
         });
+/* IGNORE THIS
     } else if (payload === "Correct") {
         sendMessage(senderId, {text: "Awesome! What would you like to find out? Enter 'plot', 'date', 'runtime', 'director', 'cast' or 'rating' for the various details."});
     } else if (payload === "Incorrect") {
         sendMessage(senderId, {text: "Oops! Sorry about that. Try using the exact title of the movie"});
     }
+*/
 }
 
 function processMessage(event) {
@@ -94,7 +94,7 @@ function processMessage(event) {
             var formattedMsg = message.text.toLowerCase().trim();
 
             if(formattedMsg.includes('find')) {
-                findSpecificMovie(senderId, formattedMsg.substring(5));              
+                findSpecificMovie(senderId, formattedMsg.substring(5));
             } else if (formattedMsg.includes('show all')) {
                 findAllGhibliMovies(senderId, formattedMsg);
             } else if(formattedMsg.includes('get description')) {
@@ -116,9 +116,9 @@ function processMessage(event) {
             } else if(formattedMsg.includes('get locations')) {
                 getMovieDetail(senderId, "locations", true);
             } else if(formattedMsg.includes('help')) {
-                sendMessage(senderId, {text: "Type 'help' to get help commands." + '\n' + 
-                    "Type 'show all' to get list of all Ghibli movies" + '\n' + 
-                    "Type 'find <name>' to get the name of a specific movie" + '\n' + 
+                sendMessage(senderId, {text: "Type 'help' to get help commands." + '\n' +
+                    "Type 'show all' to get list of all Ghibli movies" + '\n' +
+                    "Type 'find <name>' to get the name of a specific movie" + '\n' +
                     "Type 'get <description/director/producer/release date/rating/people/species/locations'> for detailed info about any of those things"});
             } else {
                 sendMessage(senderId, {text: "Try again with a known command."});
@@ -137,7 +137,7 @@ function findAllGhibliMovies(userId) {
             movies.forEach(function(movie) {
                 allMovies += movie.title + '\n';
             })
-            sendMessage(userId, {text: allMovies});                 
+            sendMessage(userId, {text: allMovies});
         }
      })
 }
@@ -179,13 +179,13 @@ function findSpecificMovie(userId, movieTitle) {
                         }
                     }
                     sendMessage(userId, message);
-                })                  
+                })
             } else {
                 sendMessage(userId, {text: "No movie found"});
-            }    
-              
+            }
+
         }
-     })   
+     })
 }
 
 function displayDetailedFacts(userId, movie, field, req) {
@@ -196,12 +196,12 @@ function displayDetailedFacts(userId, movie, field, req) {
             if(facts.length > 1) {
                 facts.forEach(function(fact) {
                     allFacts += fact.name + '\n';
-                })                
+                })
             } else {
                 allFacts += facts.name + '\n';
             }
 
-            sendMessage(userId, {text: allFacts});                 
+            sendMessage(userId, {text: allFacts});
         }
      })
 }
@@ -216,7 +216,7 @@ function getMovieDetail(userId, field, detailedFlag) {
             } else {
                 sendMessage(userId, {text: movie[field]});
             }
-            
+
         }
     });
 }
